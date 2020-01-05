@@ -1,0 +1,39 @@
+version: '3'
+services:
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:5.3.2
+    ports:
+      - "8000:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - document_root:/var/www/html
+      - ./php.ini:/usr/local/etc/php/php.ini
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - ./.data/db:/var/lib/mysql
+
+  cli:
+    image: wordpress:cli-2.4.0
+    volumes:
+      - document_root:/var/www/html
+
+volumes:
+  document_root:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/wordpress
+      o: bind
